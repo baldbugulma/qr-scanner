@@ -2,7 +2,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Проверяем, что запрос направлен к API MoySklad
-  if (req.url.includes('api.moysklad.ru')) {
+  if (req.url.includes('/api/moysklad')) {
     const cloned = req.clone({
       setHeaders: {
         // Добавляем заголовок Authorization с токеном

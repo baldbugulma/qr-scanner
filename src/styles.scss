@@ -1,7 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'fonts';
+
 :root {
   --primary-color: #4CAF50;
   --white-color: white;
+}
+
+body {
+  font-family: 'JetBrains Mono';
+  font-weight: 500;
+  background-size: cover;
+  height: 100dvh;
 }
 
 .btn{
@@ -15,4 +23,9 @@
   font-size: 20px;
   border-radius: 8px;
   margin: 0 auto;
+}
+
+
+ul li::marker {
+  content: "";
 }
