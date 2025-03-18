@@ -1,0 +1,11 @@
+{
+  "/api/moysklad": {
+    "target": "https://api.moysklad.ru",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api/moysklad": "/api/remap/1.2"
+    }
+  }
+}

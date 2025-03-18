@@ -7,7 +7,8 @@
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "style": "scss",
+          "skipTests": true
         }
       },
       "root": "",
@@ -28,7 +29,8 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "node_modules/ngx-scanner-qrcode/wasm/",
+                "output": "./assets/wasm/"
               }
             ],
             "styles": [
@@ -67,7 +69,8 @@
               "buildTarget": "qr-scn:build:production"
             },
             "development": {
-              "buildTarget": "qr-scn:build:development"
+              "buildTarget": "qr-scn:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
@@ -98,5 +101,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "39a6aa9c-7752-46ab-9747-20fec9321ecc"
   }
 }

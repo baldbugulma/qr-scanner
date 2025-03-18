@@ -1,0 +1,11 @@
+<div class="scanner-wrapper">
+  <ngx-scanner-qrcode
+    #scanner
+    class="scanner-reader"
+    (event)="onScanSuccess($event[0])">
+  </ngx-scanner-qrcode>
+
+  <button (click)="toggleScanner()" class="btn scanner-run-stop">
+    Сканировать
+  </button>
+</div>
