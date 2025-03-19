@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 
 @Component({
   selector: 'app-btn',
@@ -7,5 +7,9 @@ import { Component } from '@angular/core';
   styleUrl: './btn.component.scss'
 })
 export class BtnComponent {
+  action = output()
 
+  actionBtn() {
+    this.action.emit()
+  }
 }
