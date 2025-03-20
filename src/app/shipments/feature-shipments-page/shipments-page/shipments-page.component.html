@@ -7,7 +7,7 @@
     <ul class="shipments__items">
       @for (item of items; track item.id) {
         <li [attr.data-gtin]="item.gtin" class="shipment__item"
-            [class.complite]="item.trackingCodes === item.quantity">{{ item.name }} - {{ item.trackingCodes }}
+            [class.complite]="item.trackingCodes >= item.quantity">{{ item.name }} - {{ item.trackingCodes }}
           /{{ item.quantity }}
         </li>
       }

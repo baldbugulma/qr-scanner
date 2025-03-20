@@ -12,6 +12,10 @@ body {
   height: 100dvh;
 }
 
+.mt20{
+  margin-top: 20px !important;
+}
+
 .btn{
   display: block;
   background: var(--primary-color);
@@ -29,4 +33,13 @@ body {
 
 ul li::marker {
   content: "";
+}
+
+.qr__scanner-wrapper #qr-reader__dashboard_section {
+  display: none !important;
+}
+
+#qr-reader__scan_region video {
+  max-width: 500px;
+  width: 100%;
 }

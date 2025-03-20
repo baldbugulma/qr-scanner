@@ -29,18 +29,19 @@ export class ShipmentsPageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.activateRouter.params
-      .pipe(
-        map((params) => {
-          this.id = params['id']
-          return this.id
-        }),
-        switchMap((id) => {
-          return this.moySkladService.getDemandPositions(id)
-        })
-      ).subscribe(res => {
-        this.items.set(res)
-    })
+    this.loadData()
+  }
+
+  private loadData(){
+    this.activateRouter.params.pipe(
+      map((params) => {
+        this.id = params['id']
+        return this.id
+      }),
+      switchMap((id) => {
+        return this.moySkladService.getDemandPositions(id)
+      })
+    ).subscribe(res => this.items.set(res))
   }
 
   updateShipment(trackingCodes: string){
@@ -65,7 +66,10 @@ export class ShipmentsPageComponent implements OnInit {
     console.log(product)
     console.log('Новый код маркировки ' + trackingCodes)
 
-    this.moySkladService.updateTrackingCodes(this.id, product, trackingCodes).subscribe(res => console.log(res))
+    this.moySkladService.updateTrackingCodes(this.id, product, trackingCodes).subscribe(res => {
+      console.log(res)
+      this.loadData()
+    })
   }
 
   back(){
