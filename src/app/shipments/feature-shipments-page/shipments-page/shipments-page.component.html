@@ -1,4 +1,7 @@
-<app-feature-scanner (resultScan)="updateShipment($event)"></app-feature-scanner>
+<app-qr-scanner
+  (scanResult)="updateShipment($event)">
+</app-qr-scanner>
+
 @if (items(); as items) {
   <div class="shipments__items-wrapper">
     <ul class="shipments__items">
@@ -11,4 +14,5 @@
     </ul>
   </div>
 }
+
 <app-btn (action)="back()">Назад</app-btn>

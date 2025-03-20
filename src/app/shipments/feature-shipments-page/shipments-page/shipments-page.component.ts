@@ -4,12 +4,14 @@ import {map, switchMap} from 'rxjs';
 import {MoySkladService} from '../../../data-acces/moy-sklad/moy-sklad.service';
 import {FeatureScannerComponent} from '../../../common-ui/scanner/feature-scanner/feature-scanner.component';
 import {BtnComponent} from '../../../common-ui/btn/btn.component';
+import {QrScannerComponent} from '../../../common-ui/scanner/qr-scanner/qr-scanner.component';
+import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-shipments-page',
   imports: [
-    FeatureScannerComponent,
-    BtnComponent
+    BtnComponent,
+    QrScannerComponent,
   ],
   templateUrl: './shipments-page.component.html',
   styleUrl: './shipments-page.component.scss'
@@ -38,13 +40,12 @@ export class ShipmentsPageComponent implements OnInit {
         })
       ).subscribe(res => {
         this.items.set(res)
-      console.log(res)
     })
   }
 
-  updateShipment(id: string){
-    console.log(`Отсканированный код ` + id)
-    const match = id.match(/01(\d{14})21([^\u001d]+)/);
+  updateShipment(trackingCodes: string){
+    console.log(`Отсканированный код ` + trackingCodes)
+    const match = trackingCodes.match(/01(\d{14})21([^\u001d]+)/);
     if (!match) {
       console.error("Некорректный код маркировки!");
       return;
@@ -62,6 +63,9 @@ export class ShipmentsPageComponent implements OnInit {
     const product = items.find(item => item.gtin === gtin);
 
     console.log(product)
+    console.log('Новый код маркировки ' + trackingCodes)
+
+    this.moySkladService.updateTrackingCodes(this.id, product, trackingCodes).subscribe(res => console.log(res))
   }
 
   back(){

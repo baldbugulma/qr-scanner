@@ -2,6 +2,20 @@ import {inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {map, Observable, switchMap} from 'rxjs';
 
+interface Product {
+  id: string;
+  name: string;
+  quantity: number;
+  trackingCodes: TrackingCode[];
+  gtin: string;
+}
+
+interface TrackingCode {
+  cis: string;
+  type: string;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -47,6 +61,44 @@ export class MoySkladService {
       );
   }
 
+  updateTrackingCodes(demandId: string, product: Product, newTrackingCode: string): Observable<any> {
+    const positionUrl = `${this.apiUrl}/${demandId}/positions/${product.id}`;
+
+    // Ищем часть строки между двумя символами \u001D (или )
+    const parts = newTrackingCode.split('\u001D');
+
+    // Извлекаем вторую часть, которая идет после первого символа \u001D и до второго
+    const cleanedTrackingCode = parts.length > 1 ? parts[1] : '';
+
+    if (!cleanedTrackingCode) {
+      return new Observable(observer => {
+        observer.next({ success: false, message: 'Неверный формат кода маркировки.' });
+        observer.complete();
+      });
+    }
+
+    return this.http.get<Product>(positionUrl).pipe(
+      switchMap(existingProduct => {
+        // Проверяем, есть ли trackingCodes и если нет, создаем пустой массив
+        const trackingCodes = existingProduct.trackingCodes || [];
+
+        // Проверяем, есть ли код уже в списке
+        if (trackingCodes.some(tc => tc.cis === cleanedTrackingCode)) {
+          return new Observable(observer => {
+            observer.next({ success: true, message: 'Этот код уже добавлен.' });
+            observer.complete();
+          });
+        }
+
+        // Добавляем новый код
+        const updatedTrackingCodes = [...trackingCodes, { cis: cleanedTrackingCode, type: 'trackingcode' }];
+        return this.http.put(positionUrl, { trackingCodes: updatedTrackingCodes });
+      })
+    );
+  }
+
+
+
   private mapProductData(products: any[]): Record<string, any> {
     return products.reduce((acc, product) => {
       const gtin = product.barcodes?.find((barcode: any) => barcode.gtin)?.gtin || null;
@@ -70,4 +122,7 @@ export class MoySkladService {
       gtin: product.gtin,
     };
   }
+
+
+
 }

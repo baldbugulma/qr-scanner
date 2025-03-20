@@ -1,2 +1,5 @@
-<app-feature-scanner (resultScan)="openShipments($event)"></app-feature-scanner>
+<!--<app-feature-scanner (resultScan)="openShipments($event)"></app-feature-scanner>-->
 
+<app-qr-scanner
+  (scanResult)="openShipments($event)">
+</app-qr-scanner>
