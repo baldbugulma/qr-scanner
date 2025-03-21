@@ -1,73 +1,51 @@
-import {Component, OnInit, OnDestroy, Output, EventEmitter, AfterViewInit, signal} from '@angular/core';
-import {Html5QrcodeScanner, Html5QrcodeScannerState, Html5QrcodeScanType} from 'html5-qrcode';
+import { Component, OnDestroy, Output, EventEmitter, signal } from '@angular/core';
+import { Html5Qrcode } from 'html5-qrcode';
 import { BtnComponent } from '../../btn/btn.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-qr-scanner',
   templateUrl: './qr-scanner.component.html',
-  imports: [
-    BtnComponent
-  ],
+  imports: [BtnComponent, NgIf],
   styleUrls: ['./qr-scanner.component.scss']
 })
-export class QrScannerComponent implements OnDestroy, AfterViewInit {
-  private html5QrcodeScanner!: Html5QrcodeScanner;
-  private stateCheckInterval!: number;
+export class QrScannerComponent implements OnDestroy {
+  private html5Qrcode!: Html5Qrcode;
+
   @Output() scanResult = new EventEmitter<string>();
   @Output() scanError = new EventEmitter<string>();
 
-  public isScannerReady = signal<boolean>(false);
+  public isScannerActive = signal<boolean>(false);
 
-  ngAfterViewInit() {
-    this.initializeScanner();
+  toggleScanner() {
+    if (this.isScannerActive()) {
+      this.stopScanning();
+    } else {
+      this.startScanning();
+    }
   }
 
-  private initializeScanner() {
-    const config = {
-      fps: 15,
-      rememberLastUsedCamera: true,
-      supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
-      facingMode: "environment"
-    };
+  startScanning() {
+    this.isScannerActive.set(true);
 
-    this.html5QrcodeScanner = new Html5QrcodeScanner('qr-reader', config, false);
+    this.html5Qrcode = new Html5Qrcode("qr-reader");
 
-    this.html5QrcodeScanner.render(
+    this.html5Qrcode.start(
+      { facingMode: "environment" }, // Используем заднюю камеру
+      {
+        fps: 15,
+        qrbox: { width: 250, height: 250 } // Размер области сканирования
+      },
       (decodedText) => this.onScanSuccess(decodedText),
       (errorMessage) => this.onScanFailure(errorMessage)
-    );
-
-    // Запускаем периодическую проверку состояния
-    this.stateCheckInterval = window.setInterval(() => {
-      const state = this.html5QrcodeScanner.getState();
-
-      if (state === Html5QrcodeScannerState.SCANNING) {
-        this.isScannerReady.set(true);
-        console.log('Scanner is active');
-        this.clearStateCheck();
-      }
-
-      // Дополнительная обработка других состояний при необходимости
-      if (state === Html5QrcodeScannerState.NOT_STARTED) {
-        console.log('Scanner not started yet');
-      }
-    }, 100); // Проверяем каждые 100 мс
-
-    // На всякий случай: таймаут для остановки проверки через 10 секунд
-    setTimeout(() => {
-      this.clearStateCheck();
-    }, 10000);
-  }
-
-  private clearStateCheck() {
-    if (this.stateCheckInterval) {
-      clearInterval(this.stateCheckInterval);
-    }
+    ).catch(err => {
+      console.error("Failed to start scanning:", err);
+    });
   }
 
   private onScanSuccess(decodedText: string) {
     this.scanResult.emit(decodedText);
-    this.html5QrcodeScanner.pause();
+    this.stopScanning(); // Остановить сканирование после успешного скана
   }
 
   private onScanFailure(error: string) {
@@ -77,13 +55,17 @@ export class QrScannerComponent implements OnDestroy, AfterViewInit {
     }
   }
 
-  resumeScanning() {
-    this.html5QrcodeScanner.resume();
+  stopScanning() {
+    if (this.html5Qrcode) {
+      this.html5Qrcode.stop().then(() => {
+        this.isScannerActive.set(false);
+      }).catch(error => {
+        console.error('Failed to stop scanner:', error);
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.html5QrcodeScanner.clear().catch(error => {
-      console.error('Failed to clear html5QrcodeScanner', error);
-    });
+    this.stopScanning();
   }
 }

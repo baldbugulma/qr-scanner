@@ -97,6 +97,10 @@ export class MoySkladService {
     );
   }
 
+  getDemandInfo(demandId: string){
+   return this.http.get(`${this.apiUrl}/${demandId}`)
+  }
+
 
 
   private mapProductData(products: any[]): Record<string, any> {

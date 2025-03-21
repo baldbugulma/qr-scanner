@@ -11,4 +11,17 @@
   color: #4CAF50;
 }
 
+.demand__info-wrapper{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
 
+.error{
+  color: red;
+}
+
+.demand__info-wrapper{
+  margin-top: 20px;
+}

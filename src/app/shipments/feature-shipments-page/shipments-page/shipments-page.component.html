@@ -2,6 +2,16 @@
   (scanResult)="updateShipment($event)">
 </app-qr-scanner>
 
+@if (infoDemand(); as info){
+  <div class="demand__info-wrapper">
+    @if (errorMessage()) {
+      <div class="error">{{ errorMessage() }}</div>
+    }
+    <h3>Номер отгрузки: {{info.name}}</h3>
+    <h3>{{info.attributes[0].value.name}}</h3>
+  </div>
+}
+<div class="error"></div>
 @if (items(); as items) {
   <div class="shipments__items-wrapper">
     <ul class="shipments__items">
