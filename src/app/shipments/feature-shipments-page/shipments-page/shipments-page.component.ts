@@ -4,11 +4,24 @@ import {forkJoin, map, switchMap} from 'rxjs';
 import {MoySkladService} from '../../../data-acces/moy-sklad/moy-sklad.service';
 import {BtnComponent} from '../../../common-ui/btn/btn.component';
 import {QrScannerComponent} from '../../../common-ui/scanner/qr-scanner/qr-scanner.component';
-import {NgIf} from '@angular/common';
+import {DatePipe, NgIf} from '@angular/common';
+
+interface Product {
+  id: string;
+  name: string;
+  quantity: number;
+  trackingCodes: TrackingCode[];
+  gtin: string;
+}
+interface TrackingCode {
+  cis: string;
+  type: string;
+}
+
 
 @Component({
   selector: 'app-shipments-page',
-  imports: [BtnComponent, QrScannerComponent],
+  imports: [BtnComponent, QrScannerComponent, DatePipe],
   templateUrl: './shipments-page.component.html',
   styleUrl: './shipments-page.component.scss'
 })
@@ -16,10 +29,12 @@ export class ShipmentsPageComponent implements OnInit {
   activateRouter = inject(ActivatedRoute);
   moySkladService = inject(MoySkladService);
   route = inject(Router);
+  router = inject(Router)
 
   infoDemand = signal<any | undefined>(undefined);
   items = signal<any | undefined>(undefined);
   id: string = '';
+
 
   errorMessage = signal<string | null>(null); // Для вывода ошибки
 
@@ -85,4 +100,27 @@ export class ShipmentsPageComponent implements OnInit {
   back() {
     this.route.navigate(['/']);
   }
+
+  complite() {
+    const products: Product[] = this.items();
+    const isFullyAssembled = products.every(product => Number(product.trackingCodes) >= Number(product.quantity));
+
+    console.log(products);
+    console.log(isFullyAssembled);
+
+    const stateHref = isFullyAssembled
+      ? 'https://api.moysklad.ru/api/remap/1.2/entity/demand/metadata/states/18481224-fe6b-11ef-0a80-075e000db968' // Все товары отсканированы
+      : 'https://api.moysklad.ru/api/remap/1.2/entity/demand/metadata/states/485a2571-032e-11f0-0a80-0ebe00318d13'; // Не все товары отсканированы
+
+    this.moySkladService.updateDemandState(this.id, stateHref).subscribe(
+      () => {
+        console.log(`Статус отгрузки ${this.id} успешно обновлен.`);
+        this.router.navigate(['/'])
+      },
+      (error) => {
+        this.errorMessage.set(`Ошибка обновления статуса: ${error.message}`);
+      }
+    );
+  }
+
 }

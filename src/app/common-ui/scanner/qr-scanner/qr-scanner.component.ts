@@ -45,7 +45,9 @@ export class QrScannerComponent implements OnDestroy {
 
   private onScanSuccess(decodedText: string) {
     this.scanResult.emit(decodedText);
-    this.stopScanning(); // Остановить сканирование после успешного скана
+    setTimeout(() => {
+      this.stopScanning(); // Останавливаем сканирование уже после перехода
+    }, 0);
   }
 
   private onScanFailure(error: string) {

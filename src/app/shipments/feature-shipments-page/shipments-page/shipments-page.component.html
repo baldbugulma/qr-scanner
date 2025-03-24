@@ -9,6 +9,7 @@
     }
     <h3>Номер отгрузки: {{info.name}}</h3>
     <h3>{{info.attributes[0].value.name}}</h3>
+    <h3>Дата: {{info.created | date}}</h3>
   </div>
 }
 <div class="error"></div>
@@ -17,12 +18,20 @@
     <ul class="shipments__items">
       @for (item of items; track item.id) {
         <li [attr.data-gtin]="item.gtin" class="shipment__item"
-            [class.complite]="item.trackingCodes >= item.quantity">{{ item.name }} - {{ item.trackingCodes }}
-          /{{ item.quantity }}
+            [class.complite]="item.trackingCodes == item.quantity"
+            [class.overcomplite]="item.trackingCodes > item.quantity"
+        > {{ item.name }} - {{ item.trackingCodes }}
+          /{{ item.quantity }} {{item.uom}}
+          <img [src]="item.imageUrl" class="shipment__item-img">
         </li>
+
       }
     </ul>
   </div>
 }
+<div class="btn-wrapper">
+  <app-btn (action)="back()">Назад</app-btn>
+  <app-btn (action)="complite()">Завершить</app-btn>
+</div>
 
-<app-btn (action)="back()">Назад</app-btn>
+

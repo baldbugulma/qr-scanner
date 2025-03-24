@@ -15,6 +15,6 @@ export class HomePageComponent {
   router = inject(Router)
 
   openShipments(id:string){
-    this.router.navigate(['shipments', id])
+      this.router.navigate(['shipments', id])
   }
 }

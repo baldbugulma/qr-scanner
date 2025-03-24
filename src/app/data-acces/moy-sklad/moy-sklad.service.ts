@@ -1,6 +1,6 @@
 import {inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {map, Observable, switchMap} from 'rxjs';
+import {catchError, forkJoin, map, Observable, of, switchMap} from 'rxjs';
 
 interface Product {
   id: string;
@@ -44,7 +44,7 @@ export class MoySkladService {
             .filter((id) => id !== null);
 
           if (productIds.length === 0) {
-            return [positions.map((row) => this.mapPosition(row, {}))];
+            return of(positions.map((row) => this.mapPosition(row, {})));
           }
 
           // Получаем информацию о товарах
@@ -52,9 +52,35 @@ export class MoySkladService {
           return this.http
             .get<{ rows: any[] }>(`${this.productUrl}?filter=${filter}&limit=1000`)
             .pipe(
-              map((productResponse) => {
-                const productData = this.mapProductData(productResponse.rows);
-                return positions.map((row) => this.mapPosition(row, productData));
+              switchMap((productResponse) => {
+                let products = productResponse.rows;
+
+                // Фильтруем товары, убирая те, у которых trackingType === "NOT_TRACKED"
+                products = products.filter(product => product.trackingType !== "NOT_TRACKED");
+
+                if (products.length === 0) {
+                  return of(positions.map(row => this.mapPosition(row, {})));
+                }
+
+                // Запрашиваем изображения только для отфильтрованных товаров
+                const imageRequests = products.map(product =>
+                  this.http.get<any>(`${this.productUrl}/${product.id}/images`).pipe(
+                    catchError(() => of({ rows: [] })), // Обработка ошибок
+                    map(imagesResponse => ({
+                      ...product,
+                      images: imagesResponse.rows
+                    }))
+                  )
+                );
+
+                return forkJoin(imageRequests).pipe(
+                  map(productsWithImages => {
+                    const productData = this.mapProductData(productsWithImages);
+                    return positions
+                      .filter(row => productsWithImages.some(p => p.id === row.assortment?.meta?.href.split('/product/')[1]))
+                      .map(row => this.mapPosition(row, productData));
+                  })
+                );
               })
             );
         })
@@ -101,22 +127,32 @@ export class MoySkladService {
    return this.http.get(`${this.apiUrl}/${demandId}`)
   }
 
-
-
   private mapProductData(products: any[]): Record<string, any> {
     return products.reduce((acc, product) => {
       const gtin = product.barcodes?.find((barcode: any) => barcode.gtin)?.gtin || null;
+      const firstImage = product.images?.[0];
+      const imageUrl = firstImage?.miniature?.downloadHref || null;
+      const uom = product.uom?.name || "шт."; // Если `uom` нет, ставим "шт."
+
       acc[product.id] = {
         name: product.name,
         gtin: gtin,
+        imageUrl: imageUrl,
+        uom: uom
       };
       return acc;
     }, {} as Record<string, any>);
   }
 
+
   private mapPosition(position: any, productData: Record<string, any>) {
     const productId = position.assortment?.meta?.href.match(/\/product\/([a-zA-Z0-9-]+)/)?.[1] || null;
-    const product = productId ? productData[productId] : { name: 'Не является товаром', gtin: null };
+    const product = productId ? productData[productId] : {
+      name: 'Не является товаром',
+      gtin: null,
+      imageUrl: null,
+      uom: "шт." // По умолчанию "шт."
+    };
 
     return {
       id: position.id,
@@ -124,9 +160,13 @@ export class MoySkladService {
       quantity: position.quantity,
       trackingCodes: position.trackingCodes ? position.trackingCodes.length : 0,
       gtin: product.gtin,
+      imageUrl: product.imageUrl,
+      uom: product.uom // Добавляем единицу измерения
     };
   }
 
-
-
+  updateDemandState(demandId: string, stateHref: string): Observable<any> {
+    const url = `${this.apiUrl}/${demandId}`;
+    return this.http.put(url, { state: { meta: { href: stateHref, type: 'state', mediaType: 'application/json' } } });
+  }
 }
