@@ -89,7 +89,7 @@ export class ShipmentsPageComponent implements OnInit {
 
     this.moySkladService.updateTrackingCodes(this.id, product, trackingCodes).subscribe(res => {
       if (res.message === 'Этот код уже добавлен.') {
-        this.errorMessage.set(res.message); // Устанавливаем сообщение об ошибке
+        this.errorMessage.set(res.message);
       } else {
         console.log("Код успешно добавлен:", res);
         this.loadData();
