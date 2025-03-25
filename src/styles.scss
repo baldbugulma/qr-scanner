@@ -43,11 +43,13 @@ ul li::marker {
   content: "";
 }
 
-//.qr__scanner-wrapper #qr-reader__dashboard_section {
-//  display: none !important;
-//}
-//
-//#qr-reader__scan_region video {
-//  max-width: 500px;
-//  width: 100%;
-//}
+.error{
+  color: red;
+  text-align: center;
+}
+
+.shipments-btn .btn{
+  max-width: 130px;
+  width: 130px;
+}
+

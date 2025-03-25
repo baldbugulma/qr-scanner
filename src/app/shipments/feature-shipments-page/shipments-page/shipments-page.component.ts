@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, OnInit, signal} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {forkJoin, map, switchMap} from 'rxjs';
 import {MoySkladService} from '../../../data-acces/moy-sklad/moy-sklad.service';
@@ -23,7 +23,8 @@ interface TrackingCode {
   selector: 'app-shipments-page',
   imports: [BtnComponent, QrScannerComponent, DatePipe],
   templateUrl: './shipments-page.component.html',
-  styleUrl: './shipments-page.component.scss'
+  styleUrl: './shipments-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShipmentsPageComponent implements OnInit {
   activateRouter = inject(ActivatedRoute);
@@ -33,10 +34,16 @@ export class ShipmentsPageComponent implements OnInit {
 
   infoDemand = signal<any | undefined>(undefined);
   items = signal<any | undefined>(undefined);
+  errorMessage = signal<string | null>(null);
   id: string = '';
 
-
-  errorMessage = signal<string | null>(null); // Для вывода ошибки
+  isFullyAssembled = computed(() => {
+    const products = this.items();
+    if (!Array.isArray(products)) return false;
+    return products.every(product =>
+      Number(product.trackingCodes) >= Number(product.quantity)
+    );
+  });
 
   constructor() {}
 
@@ -102,20 +109,16 @@ export class ShipmentsPageComponent implements OnInit {
   }
 
   complite() {
-    const products: Product[] = this.items();
-    const isFullyAssembled = products.every(product => Number(product.trackingCodes) >= Number(product.quantity));
 
-    console.log(products);
-    console.log(isFullyAssembled);
-
-    const stateHref = isFullyAssembled
-      ? 'https://api.moysklad.ru/api/remap/1.2/entity/demand/metadata/states/18481224-fe6b-11ef-0a80-075e000db968' // Все товары отсканированы
-      : 'https://api.moysklad.ru/api/remap/1.2/entity/demand/metadata/states/485a2571-032e-11f0-0a80-0ebe00318d13'; // Не все товары отсканированы
+    console.log(this.isFullyAssembled());
+    const stateHref = this.isFullyAssembled()
+      ? 'https://api.moysklad.ru/api/remap/1.2/entity/demand/metadata/states/18481224-fe6b-11ef-0a80-075e000db968'
+      : 'https://api.moysklad.ru/api/remap/1.2/entity/demand/metadata/states/485a2571-032e-11f0-0a80-0ebe00318d13';
 
     this.moySkladService.updateDemandState(this.id, stateHref).subscribe(
       () => {
         console.log(`Статус отгрузки ${this.id} успешно обновлен.`);
-        this.router.navigate(['/'])
+        this.router.navigate(['/']);
       },
       (error) => {
         this.errorMessage.set(`Ошибка обновления статуса: ${error.message}`);

@@ -45,10 +45,14 @@
   align-items: center;
 }
 
-.error{
-  color: red;
-}
 
 .demand__info-wrapper{
   margin-top: 20px;
 }
+
+.btn-wrapper{
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
