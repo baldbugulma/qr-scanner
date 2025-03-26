@@ -1,9 +1,4 @@
-<!--<app-feature-scanner (resultScan)="openShipments($event)"></app-feature-scanner>-->
+<!--<app-btn (action)="openShipments()" class="home-btn">Добавить коды</app-btn>-->
+<button type="submit" class="btn mt20" (click)="openShipments()">Добавить коды</button>
+<button type="submit" class="btn mt20 red" (click)="editShipments()">Удалить коды</button>
 
-<!--<app-qr-scanner-->
-<!--  (scanResult)="openShipments($event)"-->
-<!--&gt;-->
-<!--</app-qr-scanner>-->
-
-<app-btn (action)="openShipments()" class="home-btn">Открыть отгрузку</app-btn>
-<app-btn (action)="editShipments()" class="home-btn">Редактировать отгрузку</app-btn>

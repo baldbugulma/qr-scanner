@@ -15,6 +15,6 @@ export class EditShipmentPageComponent {
   router = inject(Router)
 
   editShipment(id:string){
-    this.router.navigate(['add-mark', id])
+    this.router.navigate(['delete-mark', id])
   }
 }

@@ -87,13 +87,11 @@ export class MoySkladService {
       );
   }
 
-  updateTrackingCodes(demandId: string, product: Product, newTrackingCode: string): Observable<any> {
+  updateTrackingCodes(demandId: string, product: Product, newTrackingCode: string, action: 'add' | 'delete'): Observable<any> {
     const positionUrl = `${this.apiUrl}/${demandId}/positions/${product.id}`;
 
-    // Ищем часть строки между двумя символами \u001D (или )
+    // Разбиваем строку и извлекаем нужную часть
     const parts = newTrackingCode.split('\u001D');
-
-    // Извлекаем вторую часть, которая идет после первого символа \u001D и до второго
     const cleanedTrackingCode = parts.length > 1 ? parts[1] : '';
 
     if (!cleanedTrackingCode) {
@@ -105,23 +103,41 @@ export class MoySkladService {
 
     return this.http.get<Product>(positionUrl).pipe(
       switchMap(existingProduct => {
-        // Проверяем, есть ли trackingCodes и если нет, создаем пустой массив
-        const trackingCodes = existingProduct.trackingCodes || [];
+        let trackingCodes = existingProduct.trackingCodes || [];
 
-        // Проверяем, есть ли код уже в списке
-        if (trackingCodes.some(tc => tc.cis === cleanedTrackingCode)) {
-          return new Observable(observer => {
-            observer.next({ success: true, message: 'Этот код уже добавлен.' });
-            observer.complete();
-          });
+        if (action === 'add') {
+          // Проверяем, есть ли код уже в списке
+          if (trackingCodes.some(tc => tc.cis === cleanedTrackingCode)) {
+            return new Observable(observer => {
+              observer.next({ success: true, message: 'Этот код уже добавлен.' });
+              observer.complete();
+            });
+          }
+          // Добавляем код
+          trackingCodes = [...trackingCodes, { cis: cleanedTrackingCode, type: 'trackingcode' }];
+        }
+        else if (action === 'delete') {
+          // Проверяем, есть ли код в списке
+          if (!trackingCodes.some(tc => tc.cis === cleanedTrackingCode)) {
+            return new Observable(observer => {
+              observer.next({ success: false, message: 'Код не найден.' });
+              observer.complete();
+            });
+          }
+          // Удаляем код
+          trackingCodes = trackingCodes.filter(tc => tc.cis !== cleanedTrackingCode);
         }
 
-        // Добавляем новый код
-        const updatedTrackingCodes = [...trackingCodes, { cis: cleanedTrackingCode, type: 'trackingcode' }];
-        return this.http.put(positionUrl, { trackingCodes: updatedTrackingCodes });
+        return this.http.put(positionUrl, { trackingCodes }).pipe(
+          map(() => ({
+            success: true,
+            message: action === 'add' ? 'Код добавлен.' : 'Код удален.'
+          }))
+        );
       })
     );
   }
+
 
   getDemandInfo(demandId: string){
    return this.http.get(`${this.apiUrl}/${demandId}`)

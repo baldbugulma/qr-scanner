@@ -94,7 +94,7 @@ export class ShipmentPageAddMarkComponent implements OnInit {
       return;
     }
 
-    this.moySkladService.updateTrackingCodes(this.id, product, trackingCodes).subscribe(res => {
+    this.moySkladService.updateTrackingCodes(this.id, product, trackingCodes, 'add').subscribe(res => {
       if (res.message === 'Этот код уже добавлен.') {
         this.errorMessage.set(res.message);
       } else {

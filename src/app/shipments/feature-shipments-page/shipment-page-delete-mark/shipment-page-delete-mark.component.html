@@ -1,0 +1,39 @@
+@if (infoDemand(); as info){
+
+  <h2 class="title"> Запустите сканер чтобы <br> удалить коды маркировки</h2>
+  <app-qr-scanner
+    (scanResult)="updateShipment($event)">
+  </app-qr-scanner>
+  <div class="demand__info-wrapper">
+    @if (errorMessage()) {
+      <div class="error">{{ errorMessage() }}</div>
+    }
+    <h3>Номер отгрузки: {{info.name}}</h3>
+    <h3>{{info.attributes[0].value.name}}</h3>
+    <h3>Дата: {{info.created | date}}</h3>
+  </div>
+}
+<div class="error"></div>
+@if (items(); as items) {
+  <div class="shipments__items-wrapper">
+    <ul class="shipments__items">
+      @for (item of items; track item.id) {
+        <li [attr.data-gtin]="item.gtin" class="shipment__item"
+            [class.complite]="item.trackingCodes == item.quantity"
+            [class.overcomplite]="item.trackingCodes > item.quantity"
+        > {{ item.name }} - {{ item.trackingCodes }}
+          /{{ item.quantity }} {{item.uom}}
+          <img [src]="item.imageUrl" class="shipment__item-img">
+        </li>
+
+      }
+    </ul>
+  </div>
+} @else {
+  <div class="error">В этой накладной нет товаров с маркировкой</div>
+}
+<div class="btn-wrapper">
+  <app-btn (action)="back()" class="shipments-btn">Назад</app-btn>
+</div>
+
+

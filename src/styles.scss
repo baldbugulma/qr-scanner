@@ -38,6 +38,9 @@ h1, h2, h3, h4, h5{
   cursor: pointer;
 }
 
+.btn.red{
+  background: red;
+}
 
 ul li::marker {
   content: "";
@@ -51,5 +54,9 @@ ul li::marker {
 .shipments-btn .btn{
   max-width: 130px;
   width: 130px;
+}
+
+h2.title{
+  text-align: center;
 }
 

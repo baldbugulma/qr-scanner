@@ -9,11 +9,14 @@ import {
 import {
   EditShipmentPageComponent
 } from './shipments/feature-shipments-page/edit-shipment-page/edit-shipment-page.component';
+import {
+  ShipmentPageDeleteMarkComponent
+} from './shipments/feature-shipments-page/shipment-page-delete-mark/shipment-page-delete-mark.component';
 
 export const routes: Routes = [
   {path: '', component: HomePageComponent},
   {path: 'add-mark', component: OpenShipmentPageComponent},
   {path: 'add-mark/:id', component: ShipmentPageAddMarkComponent},
   {path: 'delete-mark', component: EditShipmentPageComponent},
-  {path: 'delete-mark/:id', component: ShipmentPageAddMarkComponent}
+  {path: 'delete-mark/:id', component: ShipmentPageDeleteMarkComponent}
 ];
