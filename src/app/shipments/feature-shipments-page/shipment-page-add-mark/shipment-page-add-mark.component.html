@@ -1,8 +1,7 @@
-<app-qr-scanner
-  (scanResult)="updateShipment($event)">
-</app-qr-scanner>
-
 @if (infoDemand(); as info){
+  <app-qr-scanner
+    (scanResult)="updateShipment($event)">
+  </app-qr-scanner>
   <div class="demand__info-wrapper">
     @if (errorMessage()) {
       <div class="error">{{ errorMessage() }}</div>
@@ -31,10 +30,14 @@
       }
     </ul>
   </div>
+} @else {
+  <div class="error">В этой накладной нет товаров с маркировкой</div>
 }
 <div class="btn-wrapper">
   <app-btn (action)="back()" class="shipments-btn">Назад</app-btn>
-  <app-btn (action)="complite()" class="shipments-btn">Завершить</app-btn>
+  @if(infoDemand()){
+    <app-btn (action)="complite()" class="shipments-btn">Завершить</app-btn>
+  }
 </div>
 
 

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, Output, EventEmitter, signal } from '@angular/core';
+import {Component, OnDestroy, Output, EventEmitter, signal, input} from '@angular/core';
 import { Html5Qrcode } from 'html5-qrcode';
 import { BtnComponent } from '../../btn/btn.component';
 import { NgIf } from '@angular/common';
@@ -12,6 +12,7 @@ import { NgIf } from '@angular/common';
 export class QrScannerComponent implements OnDestroy {
   private html5Qrcode!: Html5Qrcode;
 
+  action = input<string>('')
   @Output() scanResult = new EventEmitter<string>();
   @Output() scanError = new EventEmitter<string>();
 

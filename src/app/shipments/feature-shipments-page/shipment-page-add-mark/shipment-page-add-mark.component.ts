@@ -20,13 +20,13 @@ interface TrackingCode {
 
 
 @Component({
-  selector: 'app-shipments-page',
+  selector: 'shipment-page-add-mark',
   imports: [BtnComponent, QrScannerComponent, DatePipe],
-  templateUrl: './shipments-page.component.html',
-  styleUrl: './shipments-page.component.scss',
+  templateUrl: './shipment-page-add-mark.component.html',
+  styleUrl: './shipment-page-add-mark.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShipmentsPageComponent implements OnInit {
+export class ShipmentPageAddMarkComponent implements OnInit {
   activateRouter = inject(ActivatedRoute);
   moySkladService = inject(MoySkladService);
   route = inject(Router);
