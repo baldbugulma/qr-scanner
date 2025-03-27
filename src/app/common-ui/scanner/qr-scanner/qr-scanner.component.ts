@@ -9,7 +9,7 @@ import { NgIf } from '@angular/common';
   imports: [BtnComponent, NgIf],
   styleUrls: ['./qr-scanner.component.scss']
 })
-export class QrScannerComponent implements OnDestroy {
+export class QrScannerComponent {
   private html5Qrcode!: Html5Qrcode;
 
   action = input<string>('')
@@ -66,9 +66,5 @@ export class QrScannerComponent implements OnDestroy {
         console.error('Failed to stop scanner:', error);
       });
     }
-  }
-
-  ngOnDestroy() {
-    this.stopScanning();
   }
 }

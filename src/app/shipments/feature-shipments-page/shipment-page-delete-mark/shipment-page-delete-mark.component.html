@@ -13,7 +13,9 @@
     <h3>Дата: {{info.created | date}}</h3>
   </div>
 }
-<div class="error"></div>
+@if (errorMessage()) {
+  <div class="error">{{ errorMessage() }}</div>
+}
 @if (items(); as items) {
   <div class="shipments__items-wrapper">
     <ul class="shipments__items">
@@ -29,8 +31,6 @@
       }
     </ul>
   </div>
-} @else {
-  <div class="error">В этой накладной нет товаров с маркировкой</div>
 }
 <div class="btn-wrapper">
   <app-btn (action)="back()" class="shipments-btn">Назад</app-btn>

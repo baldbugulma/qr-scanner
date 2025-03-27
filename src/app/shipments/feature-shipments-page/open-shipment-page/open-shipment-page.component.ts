@@ -6,7 +6,7 @@ import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-shipments-page',
-  imports: [BtnComponent, QrScannerComponent, DatePipe],
+  imports: [QrScannerComponent],
   templateUrl: './open-shipment-page.component.html',
   styleUrl: './open-shipment-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -6,6 +6,8 @@
 }
 
 body {
+  padding-top: 30px;
+  padding-bottom: 30px;
   font-family: 'JetBrains Mono';
   font-weight: 500;
   background-size: cover;
@@ -58,5 +60,6 @@ ul li::marker {
 
 h2.title{
   text-align: center;
+  margin-bottom: 20px;
 }
 

@@ -1,6 +1,6 @@
 import {inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {catchError, forkJoin, map, Observable, of, switchMap} from 'rxjs';
+import {catchError, forkJoin, map, Observable, of, switchMap, throwError} from 'rxjs';
 
 interface Product {
   id: string;
@@ -59,7 +59,7 @@ export class MoySkladService {
                 products = products.filter(product => product.trackingType !== "NOT_TRACKED");
 
                 if (products.length === 0) {
-                  return of(positions.map(row => this.mapPosition(row, {})));
+                  return throwError(() => new Error('В данной накладной нет товаров, подлежащих маркировке.'));
                 }
 
                 // Запрашиваем изображения только для отфильтрованных товаров

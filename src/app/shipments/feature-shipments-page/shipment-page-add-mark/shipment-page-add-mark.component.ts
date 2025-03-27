@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, computed, inject, OnInit, signal} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {forkJoin, map, switchMap} from 'rxjs';
+import {catchError, forkJoin, map, of, switchMap} from 'rxjs';
 import {MoySkladService} from '../../../data-acces/moy-sklad/moy-sklad.service';
 import {BtnComponent} from '../../../common-ui/btn/btn.component';
 import {QrScannerComponent} from '../../../common-ui/scanner/qr-scanner/qr-scanner.component';
@@ -30,7 +30,6 @@ export class ShipmentPageAddMarkComponent implements OnInit {
   activateRouter = inject(ActivatedRoute);
   moySkladService = inject(MoySkladService);
   route = inject(Router);
-  router = inject(Router)
 
   infoDemand = signal<any | undefined>(undefined);
   items = signal<any | undefined>(undefined);
@@ -62,8 +61,14 @@ export class ShipmentPageAddMarkComponent implements OnInit {
           positions: this.moySkladService.getDemandPositions(id),
           info: this.moySkladService.getDemandInfo(id),
         })
-      )
+      ),
+      catchError((error) => {
+        this.errorMessage.set(error.message || 'Произошла ошибка при загрузке данных.');
+        return of({ positions: [], info: null });
+      })
     ).subscribe(({ positions, info }) => {
+      console.log(positions);
+      console.log(this.errorMessage());
       this.items.set(positions);
       this.infoDemand.set(info);
     });
@@ -118,7 +123,7 @@ export class ShipmentPageAddMarkComponent implements OnInit {
     this.moySkladService.updateDemandState(this.id, stateHref).subscribe(
       () => {
         console.log(`Статус отгрузки ${this.id} успешно обновлен.`);
-        this.router.navigate(['/']);
+        this.route.navigate(['/']);
       },
       (error) => {
         this.errorMessage.set(`Ошибка обновления статуса: ${error.message}`);
