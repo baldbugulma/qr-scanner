@@ -5,6 +5,7 @@ import {MoySkladService} from '../../../data-acces/moy-sklad/moy-sklad.service';
 import {BtnComponent} from '../../../common-ui/btn/btn.component';
 import {QrScannerComponent} from '../../../common-ui/scanner/qr-scanner/qr-scanner.component';
 import {DatePipe, NgIf} from '@angular/common';
+import {ModalImgComponent} from '../../../common-ui/modals/modal-img/modal-img.component';
 
 interface Product {
   id: string;
@@ -21,10 +22,11 @@ interface TrackingCode {
 
 @Component({
   selector: 'shipment-page-add-mark',
-  imports: [BtnComponent, QrScannerComponent, DatePipe],
+  imports: [BtnComponent, QrScannerComponent, DatePipe, ModalImgComponent],
   templateUrl: './shipment-page-add-mark.component.html',
   styleUrl: './shipment-page-add-mark.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true
 })
 export class ShipmentPageAddMarkComponent implements OnInit {
   activateRouter = inject(ActivatedRoute);
@@ -35,6 +37,7 @@ export class ShipmentPageAddMarkComponent implements OnInit {
   items = signal<any | undefined>(undefined);
   errorMessage = signal<string | null>(null);
   id: string = '';
+  selectedImage: string | null = null;
 
   isFullyAssembled = computed(() => {
     const products = this.items();
@@ -129,6 +132,15 @@ export class ShipmentPageAddMarkComponent implements OnInit {
         this.errorMessage.set(`Ошибка обновления статуса: ${error.message}`);
       }
     );
+  }
+
+  openModal(imageUrl:string){
+    this.selectedImage = imageUrl;
+  }
+
+  closeModal(){
+    console.log('Закрыть модалку')
+    this.selectedImage = null;
   }
 
 }

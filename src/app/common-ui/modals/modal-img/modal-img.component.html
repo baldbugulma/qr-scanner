@@ -1,0 +1,10 @@
+@if(imgUrl()){
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <img [src]="imgUrl()">
+      <button class="close-btn" (click)="closeModal()">✖</button>
+    </div>
+  </div>
+}
+
+

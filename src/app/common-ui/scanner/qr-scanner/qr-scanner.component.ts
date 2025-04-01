@@ -7,6 +7,7 @@ import { NgIf } from '@angular/common';
   selector: 'app-qr-scanner',
   templateUrl: './qr-scanner.component.html',
   imports: [BtnComponent, NgIf],
+  standalone: true,
   styleUrls: ['./qr-scanner.component.scss']
 })
 export class QrScannerComponent {
