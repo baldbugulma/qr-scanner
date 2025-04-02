@@ -23,15 +23,17 @@
         <li [attr.data-gtin]="item.gtin" class="shipment__item"
             [class.complite]="item.trackingCodes == item.quantity"
             [class.overcomplite]="item.trackingCodes > item.quantity"
-        > {{ item.name }} - {{ item.trackingCodes }}
-          /{{ item.quantity }} {{item.uom}}
-          <img [src]="item.imageUrl" class="shipment__item-img">
+        >
+          <img [src]="item.imageUrl" class="shipment__item-img" (click)="openModal(item.imageUrl)">
+          <p>{{ item.name }}</p>
+          <p>{{ item.trackingCodes }}/{{ item.quantity }} <br>{{item.uom}}
+          </p>
         </li>
-
       }
     </ul>
   </div>
 }
+<modal-img [imgUrl]="selectedImage" (close)="closeModal()"></modal-img>
 <div class="btn-wrapper">
   <app-btn (action)="back()" class="shipments-btn">Назад</app-btn>
 </div>

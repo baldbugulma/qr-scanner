@@ -5,13 +5,15 @@ import {DatePipe} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MoySkladService} from '../../../data-acces/moy-sklad/moy-sklad.service';
 import {catchError, forkJoin, map, of, switchMap} from 'rxjs';
+import {ModalImgComponent} from '../../../common-ui/modals/modal-img/modal-img.component';
 
 @Component({
   selector: 'shipment-page-delete-mark',
   imports: [
     QrScannerComponent,
     DatePipe,
-    BtnComponent
+    BtnComponent,
+    ModalImgComponent
   ],
   templateUrl: './shipment-page-delete-mark.component.html',
   styleUrl: './shipment-page-delete-mark.component.scss',
@@ -27,6 +29,7 @@ export class ShipmentPageDeleteMarkComponent implements OnInit{
   items = signal<any | undefined>(undefined);
   errorMessage = signal<string | null>(null);
   id: string = '';
+  selectedImage: string | null = null;
 
   isFullyAssembled = computed(() => {
     const products = this.items();
@@ -102,6 +105,15 @@ export class ShipmentPageDeleteMarkComponent implements OnInit{
 
   back() {
     this.route.navigate(['/']);
+  }
+
+  openModal(imageUrl:string){
+    this.selectedImage = imageUrl;
+  }
+
+  closeModal(){
+    console.log('Закрыть модалку')
+    this.selectedImage = null;
   }
 
 }

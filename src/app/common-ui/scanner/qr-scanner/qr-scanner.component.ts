@@ -1,4 +1,4 @@
-import {Component, OnDestroy, Output, EventEmitter, signal, input} from '@angular/core';
+import {Component, OnDestroy, Output, EventEmitter, signal, input, OnInit, AfterViewInit} from '@angular/core';
 import { Html5Qrcode } from 'html5-qrcode';
 import { BtnComponent } from '../../btn/btn.component';
 import { NgIf } from '@angular/common';
@@ -10,7 +10,7 @@ import { NgIf } from '@angular/common';
   standalone: true,
   styleUrls: ['./qr-scanner.component.scss']
 })
-export class QrScannerComponent {
+export class QrScannerComponent implements AfterViewInit{
   private html5Qrcode!: Html5Qrcode;
 
   action = input<string>('')
@@ -18,17 +18,17 @@ export class QrScannerComponent {
   @Output() scanError = new EventEmitter<string>();
 
   public isScannerActive = signal<boolean>(false);
+  public scanCompleted = true; // флаг успешного сканирования
+
+  ngAfterViewInit(){
+    this.startScanning();
+  }
 
   toggleScanner() {
-    if (this.isScannerActive()) {
-      this.stopScanning();
-    } else {
-      this.startScanning();
-    }
+    this.scanCompleted = !this.scanCompleted;
   }
 
   startScanning() {
-    this.isScannerActive.set(true);
 
     this.html5Qrcode = new Html5Qrcode("qr-reader");
 
@@ -46,10 +46,13 @@ export class QrScannerComponent {
   }
 
   private onScanSuccess(decodedText: string) {
+    if (this.scanCompleted){
+      return;
+    }
     this.scanResult.emit(decodedText);
-    setTimeout(() => {
-      this.stopScanning(); // Останавливаем сканирование уже после перехода
-    }, 0);
+    const beep = new Audio('/assets/audio/beep.mp3');
+    beep.play().catch(error => console.error('Ошибка воспроизведения звука:', error));
+    this.scanCompleted = true;
   }
 
   private onScanFailure(error: string) {
@@ -59,13 +62,13 @@ export class QrScannerComponent {
     }
   }
 
-  stopScanning() {
-    if (this.html5Qrcode) {
-      this.html5Qrcode.stop().then(() => {
-        this.isScannerActive.set(false);
-      }).catch(error => {
-        console.error('Failed to stop scanner:', error);
-      });
-    }
-  }
+  // stopScanning() {
+  //   if (this.html5Qrcode) {
+  //     this.html5Qrcode.stop().then(() => {
+  //       this.isScannerActive.set(false);
+  //     }).catch(error => {
+  //       console.error('Failed to stop scanner:', error);
+  //     });
+  //   }
+  // }
 }
