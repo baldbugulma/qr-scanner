@@ -50,15 +50,15 @@ export class QrScannerComponent implements AfterViewInit{
       return;
     }
     this.scanResult.emit(decodedText);
-    const beep = new Audio('/assets/audio/beep.mp3');
+    const beep = new Audio(window.location.origin + '/assets/audio/beep.mp3');
+
     beep.play().catch(error => console.error('Ошибка воспроизведения звука:', error));
     this.scanCompleted = true;
   }
 
   private onScanFailure(error: string) {
     if (!error.includes("NotFoundException")) {
-      this.scanError.emit(error);
-      console.warn("Scan error:", error);
+      // console.warn("Scan error:", error);
     }
   }
 
