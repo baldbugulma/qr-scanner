@@ -36,7 +36,7 @@ export class QrScannerComponent implements AfterViewInit{
       { facingMode: "environment" }, // Используем заднюю камеру
       {
         fps: 15,
-        qrbox: { width: 250, height: 250 } // Размер области сканирования
+        qrbox: { width: 200, height: 200 } // Размер области сканирования
       },
       (decodedText) => this.onScanSuccess(decodedText),
       (errorMessage) => this.onScanFailure(errorMessage)

@@ -1,6 +1,6 @@
 @if (infoDemand(); as info){
 
-  <h2 class="title"> Запустите сканер чтобы <br> удалить коды маркировки</h2>
+  <h2 class="title" style="color: red"> Удаление кода</h2>
   <app-qr-scanner
     (scanResult)="updateShipment($event)">
   </app-qr-scanner>
