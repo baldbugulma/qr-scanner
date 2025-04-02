@@ -70,9 +70,16 @@ export class ShipmentPageAddMarkComponent implements OnInit {
         return of({ positions: [], info: null });
       })
     ).subscribe(({ positions, info }) => {
-      console.log(positions);
       console.log(this.errorMessage());
-      this.items.set(positions);
+      const sortedPositions = positions.sort((a, b) => {
+        const aCondition = a.trackingCodes >= a.quantity;
+        const bCondition = b.trackingCodes >= b.quantity;
+
+        return aCondition === bCondition ? 0 : aCondition ? 1 : -1;
+      });
+
+      this.items.set(sortedPositions);
+      console.log(sortedPositions);
       this.infoDemand.set(info);
     });
   }
@@ -117,7 +124,6 @@ export class ShipmentPageAddMarkComponent implements OnInit {
   }
 
   complite() {
-
     console.log(this.isFullyAssembled());
     const stateHref = this.isFullyAssembled()
       ? 'https://api.moysklad.ru/api/remap/1.2/entity/demand/metadata/states/18481224-fe6b-11ef-0a80-075e000db968'
