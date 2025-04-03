@@ -1,6 +1,8 @@
-<h2 class="title">Отсканируйте накладную</h2>
+<div class="scan-invoice">
+  <h2 class="title">Отсканируйте накладную</h2>
 
-<app-qr-scanner
-  (scanResult)="openShipments($event)"
->
-</app-qr-scanner>
+  <app-qr-scanner
+    (scanResult)="openShipments($event)"
+  >
+  </app-qr-scanner>
+</div>

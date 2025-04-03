@@ -1,6 +1,6 @@
 <div class="qr__scanner-wrapper">
   <div id="qr-reader" *ngIf="isScannerActive"></div>
-  <app-btn (action)="toggleScanner()">
-    {{ scanCompleted ? 'Сканировать' : 'Остановить' }}
-  </app-btn>
 </div>
+<app-btn (action)="toggleScanner()">
+  {{ scanCompleted ? 'Сканировать' : 'Остановить' }}
+</app-btn>

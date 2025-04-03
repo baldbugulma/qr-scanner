@@ -22,7 +22,7 @@ interface TrackingCode {
 
 @Component({
   selector: 'shipment-page-add-mark',
-  imports: [BtnComponent, QrScannerComponent, DatePipe, ModalImgComponent],
+	imports: [BtnComponent, QrScannerComponent, DatePipe, ModalImgComponent, NgIf],
   templateUrl: './shipment-page-add-mark.component.html',
   styleUrl: './shipment-page-add-mark.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

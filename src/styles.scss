@@ -4,12 +4,13 @@
 }
 
 body {
-  padding-top: 5px;
-  padding-bottom: 30px;
   font-family: sans-serif;
   font-weight: 500;
   background-size: cover;
   height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  margin: 0;
 }
 
 .mt20{
@@ -57,8 +58,19 @@ ul li::marker {
 }
 
 h2.title{
+  padding-top: 10px;
   text-align: center;
   margin-bottom: 10px;
   font-size: 1.25em;
+}
+.scan-invoice{
+  position: relative;
+}
+
+.scan-invoice app-btn{
+  position: absolute;
+  top: 70dvh;
+  left: 50%;
+  transform: translateX(-50%);
 }
 

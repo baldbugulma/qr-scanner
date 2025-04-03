@@ -1,5 +1,5 @@
 @if (infoDemand(); as info){
-  <h2 class="title" style="color: green"> Добавление кодов</h2>
+  <h2 class="title" style="color: green"> Добавить коды</h2>
   <app-qr-scanner
     (scanResult)="updateShipment($event)">
   </app-qr-scanner>
@@ -27,6 +27,9 @@
           <p>{{ item.name }}</p>
           <p>{{ item.trackingCodes }}/{{ item.quantity }} <br>{{item.uom}}
           </p>
+          <svg *ngIf="item.trackingCodes === item.quantity" class="green-checkmark" viewBox="0 0 24 24">
+            <path fill="green" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
         </li>
       }
     </ul>

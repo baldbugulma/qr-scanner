@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, inject, OnInit, signal} from '@angular/core';
 import {BtnComponent} from '../../../common-ui/btn/btn.component';
 import {QrScannerComponent} from '../../../common-ui/scanner/qr-scanner/qr-scanner.component';
-import {DatePipe} from '@angular/common';
+import {DatePipe, NgIf} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MoySkladService} from '../../../data-acces/moy-sklad/moy-sklad.service';
 import {catchError, forkJoin, map, of, switchMap} from 'rxjs';
@@ -13,7 +13,8 @@ import {ModalImgComponent} from '../../../common-ui/modals/modal-img/modal-img.c
     QrScannerComponent,
     DatePipe,
     BtnComponent,
-    ModalImgComponent
+    ModalImgComponent,
+    NgIf
   ],
   templateUrl: './shipment-page-delete-mark.component.html',
   styleUrl: './shipment-page-delete-mark.component.scss',
