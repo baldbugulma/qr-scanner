@@ -62,22 +62,35 @@ export class MoySkladService {
                   return throwError(() => new Error('В данной накладной нет товаров, подлежащих маркировке.'));
                 }
 
-                // Запрашиваем изображения только для отфильтрованных товаров
-                const imageRequests = products.map(product =>
-                  this.http.get<any>(`${this.productUrl}/${product.id}/images`).pipe(
-                    catchError(() => of({ rows: [] })), // Обработка ошибок
-                    map(imagesResponse => ({
+                // Запрашиваем изображения и uom для отфильтрованных товаров
+                const productRequests = products.map(product =>
+                  forkJoin({
+                    images: this.http.get<any>(`${this.productUrl}/${product.id}/images`).pipe(
+                      catchError(() => of({ rows: [] }))
+                    ),
+                    uom: product.uom?.meta?.href
+                      ? this.http.get<any>(this.convertToProxyUrl(product.uom.meta.href)).pipe(
+                        map(uomResponse => ({
+                          // Используем name из ответа, если доступен, иначе description как запасной вариант
+                          name: uomResponse.name || uomResponse.description || 'шт.'
+                        })),
+                        catchError(() => of({ name: 'шт.' }))
+                      )
+                      : of({ name: 'шт.' })
+                  }).pipe(
+                    map(({ images, uom }) => ({
                       ...product,
-                      images: imagesResponse.rows
+                      images: images.rows,
+                      uomName: uom.name
                     }))
                   )
                 );
 
-                return forkJoin(imageRequests).pipe(
-                  map(productsWithImages => {
-                    const productData = this.mapProductData(productsWithImages);
+                return forkJoin(productRequests).pipe(
+                  map(productsWithData => {
+                    const productData = this.mapProductData(productsWithData);
                     return positions
-                      .filter(row => productsWithImages.some(p => p.id === row.assortment?.meta?.href.split('/product/')[1]))
+                      .filter(row => productsWithData.some(p => p.id === row.assortment?.meta?.href.split('/product/')[1]))
                       .map(row => this.mapPosition(row, productData));
                   })
                 );
@@ -85,6 +98,11 @@ export class MoySkladService {
             );
         })
       );
+  }
+
+  private convertToProxyUrl(fullUrl: string): string {
+    const apiPath = fullUrl.replace('https://api.moysklad.ru/api/remap/1.2', '');
+    return `/api/moysklad${apiPath}`;
   }
 
   updateTrackingCodes(demandId: string, product: Product, newTrackingCode: string, action: 'add' | 'delete'): Observable<any> {
@@ -148,13 +166,13 @@ export class MoySkladService {
       const gtin = product.barcodes?.find((barcode: any) => barcode.gtin)?.gtin || null;
       const firstImage = product.images?.[0];
       const imageUrl = firstImage?.miniature?.downloadHref || null;
-      const uom = product.uom?.name || "шт."; // Если `uom` нет, ставим "шт."
+      const uomName = product.uomName || 'шт.';  // Если `uom` нет, ставим "шт."
 
       acc[product.id] = {
         name: product.name,
         gtin: gtin,
         imageUrl: imageUrl,
-        uom: uom
+        uom: uomName
       };
       return acc;
     }, {} as Record<string, any>);
